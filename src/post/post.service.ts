@@ -1,17 +1,17 @@
-import { Injectable, Post, Query } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PostRepository } from './post.repository';
-import { ApiOperation } from '@nestjs/swagger';
 import { CreatePostDto } from './dto/req/createPost.dto';
+import { SearchPostDto } from './dto/req/searchPost.dto';
 
-@Injectable('post')
+@Injectable()
 export class PostService {
   constructor(private postRepository: PostRepository) {}
 
-  @ApiOperation({
-    summary: 'create a post',
-  })
-  @Post('create')
-  async createPost(@Query() query: CreatePostDto) {
-    return this.postRepository.create(query);
+  async createPost(query: CreatePostDto, user: any) {
+    return this.postRepository.create(query, user.userUuid);
+  }
+
+  async searchPost(query: SearchPostDto) {
+    return this.postRepository.getMany(query);
   }
 }

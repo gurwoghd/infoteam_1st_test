@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+class CreateTagDto {
+  @ApiProperty()
+  name: string;
+}
+
 export class CreatePostDto {
   @ApiProperty()
   title: string;
@@ -7,6 +12,8 @@ export class CreatePostDto {
   @ApiProperty()
   content: string;
 
-  @ApiProperty()
-  tag;
+  @ApiProperty({
+    type: [() => CreateTagDto],
+  })
+  tag: CreateTagDto[];
 }

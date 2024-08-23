@@ -37,27 +37,18 @@ model Post {
   User     User?   @relation(fields: [userUuid], references: [uuid])
 
   createdAt DateTime  @default(now()) @map("created_at")
-  PostTag   PostTag[]
+
+  Tag Tag[]
 
   @@map("post")
 }
 
-model PostTag {
-  Post   Post @relation(fields: [postId], references: [id])
-  postId Int
-
-  tagId Int
-  Tag   Tag @relation(fields: [tagId], references: [id])
-
-  @@id([postId, tagId])
-  @@map("post_tag")
-}
-
 model Tag {
-  id   Int    @id @default(autoincrement())
+  postId   Int
   name String
 
-  PostTag PostTag[]
+  Post Post @relation(fields: [postId], references: [id])
 
+  @@id(name: "tagId", [postId, name])
   @@map("tag")
 }
