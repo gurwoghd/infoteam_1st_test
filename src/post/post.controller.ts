@@ -1,9 +1,25 @@
-import { Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/req/createPost.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadGatewayResponse,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { SearchPostDto } from './dto/req/searchPost.dto';
+import { UpdatePostDto } from './dto/req/updatePost.dto';
+import { DeletePostDto } from './dto/req/deletePost.dto';
 
 @ApiTags('post')
 @Controller('post')
@@ -28,5 +44,27 @@ export class PostController {
   @Get('search')
   async searchPost(@Query() query: SearchPostDto) {
     return this.postService.searchPost(query);
+  }
+
+  @ApiOperation({
+    summary: 'update post',
+    description: 'update if new title or new content or new tags are given',
+  })
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('')
+  async updatePost(@Query() query: UpdatePostDto) {
+    return this.postService.updatePost(query);
+  }
+
+  @ApiOperation({
+    summary: 'delete post',
+    description: 'delete post whose id is the same with the given postId',
+  })
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('jwt'))
+  @Delete()
+  async deletePost(@Query() query: DeletePostDto) {
+    return this.postService.deletePost(query);
   }
 }

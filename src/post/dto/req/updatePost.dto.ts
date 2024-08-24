@@ -1,10 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdatePostDto {
   @ApiProperty({
     example: 1,
     required: true,
+  })
+  @Transform(({ value }) => {
+    return parseInt(value);
   })
   @IsNumber()
   postId: number;

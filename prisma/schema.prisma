@@ -33,8 +33,8 @@ model Post {
   title   String
   content String
 
-  userUuid String? @db.Uuid
-  User     User?   @relation(fields: [userUuid], references: [uuid])
+  userUuid String @db.Uuid
+  User     User   @relation(fields: [userUuid], references: [uuid])
 
   createdAt DateTime  @default(now()) @map("created_at")
 
