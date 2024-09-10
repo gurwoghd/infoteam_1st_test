@@ -7,6 +7,8 @@ import {
   Query,
   Req,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/req/createPost.dto';
@@ -23,6 +25,7 @@ import { DeletePostDto } from './dto/req/deletePost.dto';
 
 @ApiTags('post')
 @Controller('post')
+@UsePipes(new ValidationPipe({transform: true}))
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
@@ -30,7 +33,7 @@ export class PostController {
     summary: 'create post',
   })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('access_token'))
   @Post('create')
   async createPost(@Query() query: CreatePostDto, @Req() req: any) {
     return this.postService.createPost(query, req.user);
@@ -51,7 +54,7 @@ export class PostController {
     description: 'update if new title or new content or new tags are given',
   })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('access_token'))
   @Patch('')
   async updatePost(@Query() query: UpdatePostDto) {
     return this.postService.updatePost(query);
@@ -62,7 +65,7 @@ export class PostController {
     description: 'delete post whose id is the same with the given postId',
   })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('access_token'))
   @Delete()
   async deletePost(@Query() query: DeletePostDto) {
     return this.postService.deletePost(query);

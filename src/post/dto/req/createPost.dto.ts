@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 class CreateTagDto {
   @ApiProperty()
@@ -14,6 +15,10 @@ export class CreatePostDto {
 
   @ApiProperty({
     type: [() => CreateTagDto],
+  })
+  @Transform(({value}) => {
+    if(typeof value === "string") return [value]
+    return value;
   })
   tag: CreateTagDto[];
 }

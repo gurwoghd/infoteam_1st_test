@@ -34,8 +34,8 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @ApiResponse({ status: 201, description: 'login success' })
   @Post('login')
-  async login(@Request() req: any) {
-    return this.authService.login(req.user);
+  async login(@Request() req: any, @Res({passthrough: true}) res: any) {
+    return this.authService.login(req.user, res);
   }
 
   @ApiOperation({
@@ -44,5 +44,14 @@ export class AuthController {
   @Post('signup')
   async signup(@Query() query: SignUpDto) {
     return this.authService.signup(query);
+  }
+
+  @ApiOperation({
+    summary: 'refresh',
+  })
+  @UseGuards(AuthGuard('refresh_token'))
+  @Post('refresh')
+  async refresh(@Request() req: any) {
+    return this.authService.refresh(req.user, req.cookies['refresh_token']);
   }
 }

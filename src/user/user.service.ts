@@ -3,27 +3,25 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SignUpDto } from '../auth/req/signUp.dto';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private userRepository: UserRepository) {}
 
   async findOne(email: string) {
-    return this.prisma.user.findFirst({
-      where: {
-        email,
-      },
-    });
+    return this.userRepository.findOne(email);
   }
 
-  async create({ name, email, password }: SignUpDto) {
-    return this.prisma.user.create({
-      data: {
-        uuid: uuid(),
-        name,
-        email,
-        password: await bcrypt.hash(password, 10),
-      },
-    });
+  async findByUuid(uuid: string) {
+    return this.userRepository.findByUuid(uuid);
+  }
+
+  async create(signUpDto: SignUpDto) {
+    return this.userRepository.create(signUpDto);
+  }
+
+  async updateRefreshToken(refreshToken: string, uuid: string) {
+    return this.userRepository.updateRefreshToken(refreshToken, uuid);
   }
 }

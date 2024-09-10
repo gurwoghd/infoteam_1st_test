@@ -3,6 +3,7 @@ import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './req/signUp.dto';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -26,13 +27,51 @@ export class AuthService {
     return this.userService.create(query);
   }
 
-  async login(user: any) {
+  async login(user: any, res: any) {
+    const accessToken = await this.createAccessToken(user);
+    const refreshToken = await this.createRefreshToken(user);
+
+    res.setHeader('Authorization', 'Bearer' + accessToken);
+    res.cookie('refreshToken', refreshToken);
+
+    await this.userService.updateRefreshToken(refreshToken, user.uuid);
+
     const payload = {
       username: user.username,
       userUuid: user.uuid,
       email: user.email,
     };
 
-    return { accessToken: await this.jwtService.sign(payload) };
+    return { accessToken, refreshToken };
+  }
+
+  async createAccessToken(user: any) {
+    const payload = {
+      username: user.username,
+      userUuid: user.uuid,
+      email: user.email,
+    };
+
+    return this.jwtService.signAsync(payload, {
+      secret: process.env.ACCESS_TOKEN_KEY,
+    })
+  }
+
+  async createRefreshToken(user: any) {
+    const payload = {
+      username: user.username,
+      userUuid: user.uuid,
+      email: user.email,
+    };
+
+    return this.jwtService.signAsync(payload, {
+      secret: process.env.REFRESH_TOKEN_KEY,
+    });
+  }
+  
+  async refresh(user: any, refreshToken: string) {
+    const accessToken = await this.createAccessToken(user);
+
+    return { accessToken };
   }
 }

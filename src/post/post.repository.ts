@@ -91,20 +91,32 @@ export class PostRepository {
   }
 
   async delete({ postId }: DeletePostDto) {
-    const deletePost = this.prisma.post.delete({
+    await this.prisma.tag.deleteMany({
+      where: {
+        postId: postId,
+      },
+    })
+
+    await this.prisma.post.delete({
       where: {
         id: postId,
       },
     });
 
-    const deleteTag = this.prisma.tag.deleteMany({
-      where: {
-        postId: postId,
-      },
-    });
+    // const deleteTag = this.prisma.tag.deleteMany({
+    //   where: {
+    //     postId: postId,
+    //   },
+    // });
 
-    return this.prisma.$transaction([deletePost, deleteTag]).catch((err) => {
-      throw new Error(err);
-    });
+
+    // const deletePost = this.prisma.post.delete({
+    //   where: {
+    //     id: postId,
+    //   },
+    // });
+    // return this.prisma.$transaction([deletePost, deleteTag]).catch((err) => {
+    //   throw new Error(err);
+    // });
   }
 }
